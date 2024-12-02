@@ -1,0 +1,40 @@
+﻿@model sistema_de_subasta_mvc.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_AuthLayout";
+}
+
+<div class="text-center mb-4">
+    <h2>Sistema de Subastas</h2>
+    <p class="text-muted">Ingresa tus credenciales para continuar</p>
+</div>
+
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Username" class="form-label">Usuario</label>
+        <input asp-for="Username" class="form-control" placeholder="Ingrese su usuario" autocomplete="off" />
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-4">
+        <label asp-for="Password" class="form-label">Contraseña</label>
+        <input asp-for="Password" class="form-control" placeholder="Ingrese su contraseña" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="d-grid gap-2 mb-3">
+        <button type="submit" class="btn btn-primary btn-lg">Iniciar Sesión</button>
+    </div>
+
+    <div class="text-center">
+        <a asp-action="Register" class="text-decoration-none">¿No tienes cuenta? Regístrate</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

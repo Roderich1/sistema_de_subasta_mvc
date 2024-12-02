@@ -1,0 +1,73 @@
+﻿@model IEnumerable<sistema_de_subasta_mvc.Models.ProductoViewModel>
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<div class="container mt-4">
+    <div class="mb-4">
+        <div class="btn-group">
+            <a href="@Url.Action("Index", new { tipo = "todos" })"
+               class="btn @(ViewBag.TipoActual == "todos" ? "btn-primary" : "btn-outline-primary")">
+                Todos los anuncios
+            </a>
+            <a href="@Url.Action("Index", new { tipo = "subasta" })"
+               class="btn @(ViewBag.TipoActual == "subasta" ? "btn-primary" : "btn-outline-primary")">
+                Subasta
+            </a>
+            <a href="@Url.Action("Index", new { tipo = "ventadirecta" })"
+               class="btn @(ViewBag.TipoActual == "ventadirecta" ? "btn-primary" : "btn-outline-primary")">
+                ¡Cómpralo ahora!
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span>@Model.Count() resultados</span>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Estado
+                    </button>
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Precio
+                    </button>
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Formato de compra
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var producto in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @if (producto.Imagenes != null && producto.Imagenes.Any())
+                    {
+                        <img src="@producto.Imagenes[0]" class="card-img-top" alt="@producto.Titulo">
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-light text-center py-5">
+                            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@producto.Titulo</h5>
+                        <p class="card-text">
+                            <strong>Bs. @producto.Precio.ToString("N2")</strong>
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                @producto.Tipo.ToUpper() · @producto.Estado
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
