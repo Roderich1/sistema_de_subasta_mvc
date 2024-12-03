@@ -12,11 +12,19 @@
         </div>
     }
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <h5 class="card-title">Puntuación General</h5>
+                    <h5 class="card-title">Puntuación como Vendedor</h5>
                     <div class="display-4 text-warning mb-2">
                         @for (int i = 0; i < Math.Floor(Model.PromedioValoraciones); i++)
                         {
@@ -26,6 +34,10 @@
                         {
                             <i class="bi bi-star-half"></i>
                         }
+                        @for (int i = 0; i < 5 - Math.Ceiling(Model.PromedioValoraciones); i++)
+                        {
+                            <i class="bi bi-star"></i>
+                        }
                     </div>
                     <p class="card-text">@Model.PromedioValoraciones.ToString("N1")/5.0</p>
                     <p class="text-muted">Basado en @Model.TotalValoraciones valoraciones</p>
@@ -34,74 +46,78 @@
         </div>
     </div>
 
-    <ul class="nav nav-tabs mb-4" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#vendedor">
-                Como Vendedor (@Model.ValoracionesComoVendedor.Count)
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#comprador">
-                Como Comprador (@Model.ValoracionesComoComprador.Count)
-            </a>
-        </li>
-    </ul>
-
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="vendedor">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-3">Valoraciones Recibidas (@Model.ValoracionesComoVendedor.Count)</h4>
             @if (Model.ValoracionesComoVendedor.Any())
             {
-                foreach (var valoracion in Model.ValoracionesComoVendedor)
+                foreach (var valoracion in Model.ValoracionesComoVendedor.OrderByDescending(v => v.Fecha))
                 {
-                    <div class="card mb-3">
+                    <div class="card mb-3 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0">@valoracion.NombreComprador</h6>
+                                <div>
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-person-circle me-2"></i>
+                                        @valoracion.NombreComprador
+                                    </h6>
+                                </div>
                                 <div class="text-warning">
                                     @for (int i = 0; i < valoracion.Puntuacion; i++)
                                     {
                                         <i class="bi bi-star-fill"></i>
                                     }
+                                    @for (int i = 0; i < 5 - valoracion.Puntuacion; i++)
+                                    {
+                                        <i class="bi bi-star"></i>
+                                    }
                                 </div>
                             </div>
-                            <p class="mb-1">@valoracion.Comentario</p>
-                            <small class="text-muted">@valoracion.Fecha.ToString("dd/MM/yyyy HH:mm")</small>
+                            <div class="mb-2">
+                                @if (!string.IsNullOrEmpty(valoracion.Comentario))
+                                {
+                                    <p class="mb-1 text-muted">@valoracion.Comentario</p>
+                                }
+                                else
+                                {
+                                    <p class="mb-1 text-muted fst-italic">Sin comentarios</p>
+                                }
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    @valoracion.Fecha.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                                @if (!string.IsNullOrEmpty(valoracion.VentaId))
+                                {
+                                    <small class="text-muted">
+                                        <i class="bi bi-tag me-1"></i>
+                                        Venta #@valoracion.VentaId.Substring(0, 8)
+                                    </small>
+                                }
+                            </div>
                         </div>
                     </div>
                 }
             }
             else
             {
-                <div class="alert alert-info">No hay valoraciones como vendedor todavía.</div>
-            }
-        </div>
-
-        <div class="tab-pane fade" id="comprador">
-            @if (Model.ValoracionesComoComprador.Any())
-            {
-                foreach (var valoracion in Model.ValoracionesComoComprador)
-                {
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0">@valoracion.NombreVendedor</h6>
-                                <div class="text-warning">
-                                    @for (int i = 0; i < valoracion.Puntuacion; i++)
-                                    {
-                                        <i class="bi bi-star-fill"></i>
-                                    }
-                                </div>
-                            </div>
-                            <p class="mb-1">@valoracion.Comentario</p>
-                            <small class="text-muted">@valoracion.Fecha.ToString("dd/MM/yyyy HH:mm")</small>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="alert alert-info">No hay valoraciones como comprador todavía.</div>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Aún no has recibido valoraciones como vendedor.
+                </div>
             }
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Cerrar automáticamente las alertas después de 5 segundos
+            setTimeout(function () {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+    </script>
+}

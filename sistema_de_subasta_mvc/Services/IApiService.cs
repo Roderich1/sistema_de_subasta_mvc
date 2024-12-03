@@ -13,5 +13,6 @@ namespace sistema_de_subasta_mvc.Services
         Task<List<ValoracionViewModel>> GetValoracionesUsuarioAsync(string userId, string tipo);
         Task<double> GetPromedioValoracionesAsync(string userId);
         Task<ValoracionViewModel> CreateValoracionAsync(ValoracionViewModel valoracion);
+        Task<bool> UpdateReputacionAsync(string userId, double nuevaReputacion);
     }
 }

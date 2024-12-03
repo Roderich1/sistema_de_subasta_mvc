@@ -7,7 +7,7 @@ namespace sistema_de_subasta_mvc.Services
     public class ApiService : IApiService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://6265-181-115-215-38.ngrok-free.app/api";
+        private const string BaseUrl = "https://2ce7-181-188-139-196.ngrok-free.app/api";
 
         public ApiService(HttpClient httpClient)
         {
@@ -212,6 +212,50 @@ namespace sistema_de_subasta_mvc.Services
             }
         }
 
+        
+        public async Task<bool> UpdateReputacionAsync(string userId, double nuevaReputacion)
+        {
+            try
+            {
+                var user = await GetUserByIdAsync(userId);
+                if (user == null) return false;
+
+                // Actualizamos la reputación manteniendo los demás datos
+                var updateUser = new
+                {
+                    id = user.Id,
+                    username = user.Username,
+                    email = user.Email,
+                    password = user.Password,
+                    nombre = user.Nombre,
+                    telefono = user.Telefono,
+                    direccion = user.Direccion,
+                    estado = user.Estado,
+                    reputacion = nuevaReputacion,
+                    wallet = new
+                    {
+                        saldo = user.Wallet.Saldo,
+                        saldoBloqueado = user.Wallet.SaldoBloqueado
+                    },
+                    fechaRegistro = user.FechaRegistro
+                };
+
+                var response = await _httpClient.PutAsJsonAsync($"{BaseUrl}/Usuario/{userId}", updateUser);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error al actualizar reputación: {error}");
+                }
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en UpdateReputacionAsync: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Modificar el método CreateValoracionAsync existente
         public async Task<ValoracionViewModel> CreateValoracionAsync(ValoracionViewModel model)
         {
             try
@@ -231,6 +275,13 @@ namespace sistema_de_subasta_mvc.Services
                     var createdValoracion = await response.Content.ReadFromJsonAsync<Valoracion>();
                     if (createdValoracion != null)
                     {
+                        // Obtener todas las valoraciones del vendedor y calcular el nuevo promedio
+                        var valoracionesVendedor = await GetValoracionesUsuarioAsync(model.VendedorId, "vendedor");
+                        double nuevaReputacion = valoracionesVendedor.Average(v => v.Puntuacion);
+
+                        // Actualizar la reputación del vendedor
+                        await UpdateReputacionAsync(model.VendedorId, nuevaReputacion);
+
                         return new ValoracionViewModel
                         {
                             Id = createdValoracion.Id,
@@ -244,7 +295,8 @@ namespace sistema_de_subasta_mvc.Services
                     }
                 }
 
-                throw new Exception("Error al crear la valoración");
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al crear la valoración: {errorContent}");
             }
             catch (Exception ex)
             {

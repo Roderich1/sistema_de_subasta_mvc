@@ -126,18 +126,23 @@ namespace sistema_de_subasta_mvc.Controllers
 
             try
             {
-                // Obtener tanto las valoraciones como vendedor y como comprador
+                // Obtener solo las valoraciones como vendedor
                 var valoracionesVendedor = await _apiService.GetValoracionesUsuarioAsync(userId, "vendedor");
-                var valoracionesComprador = await _apiService.GetValoracionesUsuarioAsync(userId, "comprador");
                 var promedioValoraciones = await _apiService.GetPromedioValoracionesAsync(userId);
 
                 var viewModel = new ReputacionViewModel
                 {
                     ValoracionesComoVendedor = valoracionesVendedor,
-                    ValoracionesComoComprador = valoracionesComprador,
                     PromedioValoraciones = promedioValoraciones,
-                    TotalValoraciones = valoracionesVendedor.Count + valoracionesComprador.Count
+                    TotalValoraciones = valoracionesVendedor.Count
                 };
+
+                // Actualizar la reputación del usuario si es necesario
+                var user = await _apiService.GetUserByIdAsync(userId);
+                if (user != null && Math.Abs(user.Reputacion - promedioValoraciones) > 0.01)
+                {
+                    await _apiService.UpdateReputacionAsync(userId, promedioValoraciones);
+                }
 
                 return View(viewModel);
             }
