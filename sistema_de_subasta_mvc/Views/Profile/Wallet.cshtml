@@ -1,0 +1,77 @@
+﻿@using sistema_de_subasta_mvc.Models.ViewModels
+@model WalletViewModel
+
+<div class="container mt-4">
+    <h2>Mi Cartera</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Saldo Disponible</h5>
+                    <h3 class="text-success">$@Model.SaldoActual.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Saldo Bloqueado</h5>
+                    <h3 class="text-warning">$@Model.SaldoBloqueado.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Agregar Fondos</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="AddFunds" method="post">
+                @if (!ViewContext.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label asp-for="MontoAgregar" class="form-label">Monto a agregar</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="MontoAgregar" class="form-control" type="number" step="0.01" min="1" />
+                    </div>
+                    <span asp-validation-for="MontoAgregar" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MetodoPago" class="form-label">Método de Pago</label>
+                    <select asp-for="MetodoPago" class="form-select">
+                        <option value="">Seleccione un método de pago</option>
+                        <option value="tarjeta">Tarjeta de Crédito</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="transferencia">Transferencia Bancaria</option>
+                    </select>
+                    <span asp-validation-for="MetodoPago" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Agregar Fondos</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

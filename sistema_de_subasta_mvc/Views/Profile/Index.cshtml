@@ -1,0 +1,92 @@
+﻿@using sistema_de_subasta_mvc.Models.ViewModels
+@model ProfileViewModel
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-circle display-1"></i>
+                    <h3 class="mt-3">@Model.Nombre</h3>
+                    <p class="text-muted">@Model.Username</p>
+                    <div class="d-flex justify-content-center">
+                        <div class="me-3">
+                            <strong>Reputación</strong>
+                            <div class="text-warning">
+                                @for (var i = 0; i < Math.Floor(Model.Reputacion); i++)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                @if (Model.Reputacion % 1 > 0)
+                                {
+                                    <i class="bi bi-star-half"></i>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Información Personal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Email</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            @Model.Email
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Teléfono</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            @Model.Telefono
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Dirección</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            @Model.Direccion.Calle, @Model.Direccion.Ciudad, @Model.Direccion.CodigoPostal
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Miembro desde</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            @Model.FechaRegistro.ToString("MMMM dd, yyyy")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Mi Cartera</h5>
+                    <a asp-action="Wallet" class="btn btn-primary btn-sm">Gestionar</a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h6>Saldo Disponible</h6>
+                            <h4 class="text-success">$@Model.Wallet.SaldoActual.ToString("N2")</h4>
+                        </div>
+                        <div class="col-6">
+                            <h6>Saldo Bloqueado</h6>
+                            <h4 class="text-warning">$@Model.Wallet.SaldoBloqueado.ToString("N2")</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
