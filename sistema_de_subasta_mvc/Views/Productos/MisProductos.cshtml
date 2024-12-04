@@ -1,0 +1,121 @@
+﻿@model List<sistema_de_subasta_mvc.Models.ProductoViewModel>
+
+@{
+    ViewData["Title"] = "Mis Productos";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Mis Productos</h1>
+        <a asp-action="Create" class="btn btn-primary">Publicar Nuevo</a>
+    </div>
+
+    <!-- Pestañas para filtrar -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#todos">Todos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#ventadirecta">Venta Directa</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#subastas">Subastas</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="todos">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var producto in Model)
+                {
+                    <div class="col">
+                        <div class="card h-100">
+                            @if (producto.Imagenes?.Any() == true)
+                            {
+                                <img src="@producto.Imagenes.First()" class="card-img-top" alt="@producto.Titulo">
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@producto.Titulo</h5>
+                                <p class="card-text">@producto.Descripcion</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-@(producto.Tipo == "subasta" ? "success" : "primary")">
+                                        @(producto.Tipo == "subasta" ? "Subasta" : "Venta Directa")
+                                    </span>
+                                    <span class="text-muted">$@producto.Precio.ToString("N2")</span>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i> @producto.FechaPublicacion.ToLocalTime().ToString("dd/MM/yyyy")
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                    <span class="badge bg-@(producto.Estado == "activo" ? "success" : "secondary")">
+                                        @producto.Estado
+                                    </span>
+                                    <div>
+                                        <a asp-action="Edit" asp-route-id="@producto.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        @if (producto.Estado == "activo")
+                                        {
+                                            <button onclick="cambiarEstado('@producto.Id', 'cancelado')" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="ventadirecta">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var producto in Model.Where(p => p.Tipo == "ventaDirecta"))
+                {
+                    <div class="col">
+                        <!-- Mismo contenido que arriba para productos de venta directa -->
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="subastas">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var producto in Model.Where(p => p.Tipo == "subasta"))
+                {
+                    <div class="col">
+                        <!-- Mismo contenido que arriba para productos en subasta -->
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function cambiarEstado(id, estado) {
+            if (confirm('¿Está seguro de cambiar el estado del producto?')) {
+                fetch(`/Productos/CambiarEstado/${id}?estado=${estado}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al cambiar el estado');
+                    }
+                });
+            }
+        }
+    </script>
+}

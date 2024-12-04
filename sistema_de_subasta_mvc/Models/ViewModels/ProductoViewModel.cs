@@ -18,5 +18,10 @@ namespace sistema_de_subasta_mvc.Models
         public string Condicion { get; set; }
         public int Visitas { get; set; }
         public DateTime FechaPublicacion { get; set; }
+
+        public decimal PrecioInicial { get; set; }
+        public decimal IncrementoMinimo { get; set; }
+        public decimal PrecioReserva { get; set; }
+        public DateTime FechaFin { get; set; }
     }
 }

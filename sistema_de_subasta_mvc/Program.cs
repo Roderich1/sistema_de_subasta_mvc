@@ -17,7 +17,8 @@ builder.Services.AddSession(options =>
 // Registrar HttpClient y ApiService
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IApiService, ApiService>();
-builder.Services.AddScoped<IProductoService, ProductoService>();
+builder.Services.AddScoped<ISubastaService, SubastaService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 
 

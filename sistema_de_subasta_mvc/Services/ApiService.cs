@@ -7,7 +7,7 @@ namespace sistema_de_subasta_mvc.Services
     public class ApiService : IApiService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://2ce7-181-188-139-196.ngrok-free.app/api";
+        private const string BaseUrl = "https://4cb4-181-115-215-38.ngrok-free.app/api";
 
         public ApiService(HttpClient httpClient)
         {
